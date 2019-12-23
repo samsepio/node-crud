@@ -1,32 +1,30 @@
 const passport=require('passport');
-const LocalStrategy=require('passport-local').Strategy;
-
+const LocalStrategy=require('passport-local').Strategy
+const mongoose=require('mongoose');
 const User=require('../model/database2');
 
-passport.serialiseUser((done,user)=>{
+passport.use('local-signin',new LocalStrategy({
+	usernameField: 'email'
+},async(email,password,done) => {
+	const user = await User.findOne({email: email});
+	if(!user){
+		return done(null,false, {message: 'Correo No Registrado'});
+	}else{
+		const match = await user.comparePassword(password);
+		if(match){
+			return done(null,user);
+		}else{
+			return done(null,false,{message: 'contraseña incorrecta'});
+		}
+	}
+}));
+
+passport.serializeUser((user,done)=>{
 	done(null,user.id);
 });
 
-passport.deserialiseUser(async(done,id)=>{
-	const user = await User.findById(id);
-	done(null,user);
+passport.deserializeUser((id, done) => {
+  	User.findById(id, (err, user) => {
+    		done(err, user);
+	});
 });
-
-passport.use('local-signup', new LocalStrategy,({
-	usernameField: 'email',
-	passwordField: 'password',
-	passReqToCallback: true
-},async(req,res,done,user)=>{
-	
-	const user = await User.findOne({email: email});
-	if(user){
-		done(null,flase,req.flash('signupMessage','el correo ya esta registrado'));
-	}else{
-		const newUser = new User(req.body);
-        	newUser.email = email;
-        	newUser.password = newUser.encryptPassword(password);
-        	console.log(newUser);
-        	await newUser.save();
-        	done(null,newUser);
-	}
-}));

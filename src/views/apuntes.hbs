@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="row">
+<div class="row p-4">
   {{#each notes}}
   <div class="col-md-3">
     <div class="card">
@@ -18,7 +18,7 @@
   {{else}}
   <div class="card mx-auto">
     <div class="card-body">
-      <h1>Hello {{user.name}}</h1>
+      <h1>Hola {{user.name}}</h1>
       <p clsss="lead">agrega notas ya que no tienes ninguna</p>
       <a href="/add"class="btn btn-success btn-block">Crear Nota</a>
     </div>

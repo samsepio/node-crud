@@ -16,6 +16,8 @@ mongoose.connect('mongodb+srv://eliotalderson_01:3219329910@databasered-6xixf.mo
 	.then(db => console.log('conectado a la base de datos'))
 	.catch(err => console.log(err));
 
+require('./passport/local-auth');
+
 app.set('puerto',process.env.PORT || 8000);
 app.set('views',path.join(__dirname,'./views'));
 app.engine('.hbs', exphbs({
@@ -35,12 +37,14 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
-app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 app.use((req,res,next) => {
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
+	res.locals.error = req.flash('error');
+	res.locals.user = req.user || null;
 	next();
 });
 const storage = multer.diskStorage({
